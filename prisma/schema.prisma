@@ -13,4 +13,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model 
+model Article {
+  id            String   @id @default(cuid())
+  title         String
+  authorId      String
+  publishedDate DateTime
+  content       String
+  tags          Tag[]    @relation("ArticleTags")
+  category      String
+  images        String[]
+  videoUrl      String?  
+  author        Author   @relation(fields: [authorId], references: [id])
+
+  @@index([title])
+}
+
+model Author {
+  id             String   @id @default(cuid())
+  username       String   @unique
+  email          String?   @unique
+  profilePicture String?
+  bio            String?  // Optional biography field
+  articles       Article[] // Relation to the Article model
+  createdAt      DateTime @default(now()) // Timestamp for when the author was created
+  updatedAt      DateTime @updatedAt // Timestamp for when the author was last updated
+
+  @@index([username]) // Index for faster queries
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  articles  Article[] @relation("ArticleTags")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
