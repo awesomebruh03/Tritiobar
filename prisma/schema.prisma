@@ -24,6 +24,9 @@ model Article {
   images        String[]
   videoUrl      String?  
   author        Author   @relation(fields: [authorId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  articleType   String? // Optional field to differentiate between different types of articles
 
   @@index([title])
 }
