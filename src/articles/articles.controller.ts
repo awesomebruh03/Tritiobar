@@ -16,27 +16,30 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.articleService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.articleService.findOne(Number(id));
+  async findOne(@Param('id') id: string) {
+    return await this.articleService.findOne(String(id));
   }
 
   @Post()
-  create(@Body() createArticleDto: CreateArticleDto) {
+  async create(@Body() createArticleDto: CreateArticleDto) {
     return this.articleService.create(createArticleDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
-    return this.articleService.update(Number(id), updateArticleDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateArticleDto: UpdateArticleDto,
+  ) {
+    return await this.articleService.update(String(id), updateArticleDto);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.articleService.delete(Number(id));
+  async delete(@Param('id') id: string) {
+    return this.articleService.delete(String(id));
   }
 }

@@ -1,49 +1,58 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import { CreateAuthorDto } from './dto/CreateAuthorDto';
 import { UpdateAuthorDto } from './dto/UpdateAuthorDto';
+import any = jasmine.any;
 
 @Injectable()
 export class AuthorsService {
   private authors = [];
+  private prisma = new PrismaClient();
 
-  findAll() {
-    return this.authors;
-  }
+  fetchAuthorsWithoutArticles = async () => {
+    return this.prisma.author.findMany({
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        profilePicture: true,
+        bio: true,
+        createdAt: true,
+        articles: true,
+        updatedAt: true,
+      },
+    });
+  };
 
-  findOne(id: number) {
-    const author = this.authors.find((auth) => auth.id === id);
+  findOne = async (id: string) => {
+    const author = this.prisma.author.findUnique({
+      where: { id },
+    });
+
     if (!author) {
       throw new NotFoundException(`Author with ID ${id} not found`);
     }
     return author;
-  }
+  };
 
-  create(createAuthorDto: CreateAuthorDto) {
-    const newAuthor = {
-      id: Date.now(),
-      ...createAuthorDto,
-    };
-    this.authors.push(newAuthor);
-    return newAuthor;
-  }
+  create = async (createAuthorDto: CreateAuthorDto) => {
+    return this.prisma.author.create({
+      data: {
+        ...createAuthorDto,
+      },
+    });
+  };
 
-  update(id: number, updateAuthorDto: UpdateAuthorDto) {
-    const authorIndex = this.authors.findIndex((auth) => auth.id === id);
-    if (authorIndex === -1) {
-      throw new NotFoundException(`Author with ID ${id} not found`);
-    }
-    this.authors[authorIndex] = {
-      ...this.authors[authorIndex],
-      ...updateAuthorDto,
-    };
-    return this.authors[authorIndex];
-  }
+  update = async (id: string, updateAuthorDto: UpdateAuthorDto) => {
+    return this.prisma.author.update({
+      where: { id },
+      data: updateAuthorDto,
+    });
+  };
 
-  delete(id: number) {
-    const authorIndex = this.authors.findIndex((auth) => auth.id === id);
-    if (authorIndex === -1) {
-      throw new NotFoundException(`Author with ID ${id} not found`);
-    }
-    return this.authors.splice(authorIndex, 1);
-  }
+  delete = async (id: string) => {
+    return this.prisma.author.delete({
+      where: { id },
+    });
+  };
 }

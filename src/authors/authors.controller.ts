@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
 import { AuthorsService } from './authors.service';
 import { CreateAuthorDto } from './dto/CreateAuthorDto';
 import { UpdateAuthorDto } from './dto/UpdateAuthorDto';
@@ -8,13 +16,13 @@ export class AuthorsController {
   constructor(private readonly authorsService: AuthorsService) {}
 
   @Get()
-  findAll() {
-    return this.authorsService.findAll();
+  fetchAuthors() {
+    return this.authorsService.fetchAuthorsWithoutArticles();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.authorsService.findOne(Number(id));
+    return this.authorsService.findOne(String(id));
   }
 
   @Post()
@@ -24,11 +32,11 @@ export class AuthorsController {
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateAuthorDto: UpdateAuthorDto) {
-    return this.authorsService.update(Number(id), updateAuthorDto);
+    return this.authorsService.update(String(id), updateAuthorDto);
   }
 
   @Delete(':id')
   delete(@Param('id') id: string) {
-    return this.authorsService.delete(Number(id));
+    return this.authorsService.delete(String(id));
   }
 }

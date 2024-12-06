@@ -8,7 +8,6 @@ import { TagsController } from './tags/tags.controller';
 import { TagsService } from './tags/tags.service';
 import { TagsModule } from './tags/tags.module';
 
-
 @Module({
   imports: [PrismaModule, ArticlesModule, AuthorsModule, TagsModule],
   controllers: [AppController, TagsController],

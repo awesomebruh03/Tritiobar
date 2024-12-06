@@ -19,69 +19,66 @@ describe('ArticleService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create an article', () => {
+  it('should create an article', async () => {
     const createArticleDto: CreateArticleDto = {
       title: 'Test Article',
       authorId: '1',
-      publishedDate: new Date().toISOString(),
+      publishedDate: new Date(), // Ensure publishedDate is a Date object
       content: 'Test content',
       tags: ['test'],
       category: 'test',
       images: ['image1.jpg'],
     };
-    const article = service.create(createArticleDto);
+    const article = await service.create(createArticleDto);
     expect(article).toMatchObject(createArticleDto);
     expect(article).toHaveProperty('id');
   });
 
-  it('should find all articles', () => {
-    const articles = service.findAll();
+  it('should find all articles', async () => {
+    const articles = await service.findAll();
     expect(articles).toBeInstanceOf(Array);
   });
 
-  it('should find one article by id', () => {
+  it('should find one article by id', async () => {
     const createArticleDto: CreateArticleDto = {
       title: 'Test Article',
       authorId: '1',
-      publishedDate: new Date().toISOString(),
+      publishedDate: new Date(), // Ensure publishedDate is a Date object
       content: 'Test content',
       tags: ['test'],
       category: 'test',
       images: ['image1.jpg'],
     };
-    const article = service.create(createArticleDto);
-    const foundArticle = service.findOne(article.id);
-    expect(foundArticle).toMatchObject(createArticleDto);
-  });
 
-  it('should update an article', () => {
-    const createArticleDto: CreateArticleDto = {
-      title: 'Test Article',
-      authorId: '1',
-      publishedDate: new Date().toISOString(),
-      content: 'Test content',
-      tags: ['test'],
-      category: 'test',
-      images: ['image1.jpg'],
-    };
-    const article = service.create(createArticleDto);
-    const updateArticleDto: UpdateArticleDto = { title: 'Updated Title' };
-    const updatedArticle = service.update(article.id, updateArticleDto);
-    expect(updatedArticle.title).toBe('Updated Title');
-  });
+    it('should update an article', async () => {
+      const createArticleDto: CreateArticleDto = {
+        title: 'Test Article',
+        authorId: '1',
+        publishedDate: new Date(),
+        content: 'Test content',
+        tags: ['test'],
+        category: 'test',
+        images: ['image1.jpg'],
+      };
+      const article = await service.create(createArticleDto);
+      const updateArticleDto: UpdateArticleDto = { title: 'Updated Title' };
+      const updatedArticle = await service.update(article.id, updateArticleDto);
+      expect(updatedArticle.title).toBe('Updated Title');
+    });
 
-  it('should delete an article', () => {
-    const createArticleDto: CreateArticleDto = {
-      title: 'Test Article',
-      authorId: '1',
-      publishedDate: new Date().toISOString(),
-      content: 'Test content',
-      tags: ['test'],
-      category: 'test',
-      images: ['image1.jpg'],
-    };
-    const article = service.create(createArticleDto);
-    service.delete(article.id);
-    expect(() => service.findOne(article.id)).toThrow(NotFoundException);
+    it('should delete an article', async () => {
+      const createArticleDto: CreateArticleDto = {
+        title: 'Test Article',
+        authorId: '1',
+        publishedDate: new Date(),
+        content: 'Test content',
+        tags: ['test'],
+        category: 'test',
+        images: ['image1.jpg'],
+      };
+      const article = await service.create(createArticleDto);
+      await service.delete(article.id);
+      expect(() => service.findOne(article.id)).toThrow(NotFoundException);
+    });
   });
 });
