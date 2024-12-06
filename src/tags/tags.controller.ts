@@ -1,17 +1,18 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Param, Post, Put } from '@nestjs/common';
 import { TagsService } from './tags.service';
+import { CreateTagDto } from './dto/CreateTagDto';
+import { UpdateTagDto } from './dto/UpdateTagDto';
 
 @Controller('tags')
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
-  @Get()
-  findAll() {
-    return this.tagsService.findAll();
+  @Post()
+  createTag(@Body() createTagDto: CreateTagDto) {
+    return this.tagsService.CreateTag(createTagDto);
   }
-
-  @Get('article/:articleId')
-  findTagsByArticleId(@Param('articleId') articleId: string) {
-    return this.tagsService.findTagsByArticleId(articleId);
+  @Put(':id')
+  updateTag(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
+    return this.tagsService.UpdateTags(id, updateTagDto);
   }
 }
