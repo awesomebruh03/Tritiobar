@@ -5,7 +5,6 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class ArticleService {
-  private articles = [];
   private prisma = new PrismaClient();
 
   findAll = async () => {

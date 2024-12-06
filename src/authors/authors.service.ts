@@ -2,11 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { CreateAuthorDto } from './dto/CreateAuthorDto';
 import { UpdateAuthorDto } from './dto/UpdateAuthorDto';
-import any = jasmine.any;
+
 
 @Injectable()
 export class AuthorsService {
-  private authors = [];
   private prisma = new PrismaClient();
 
   fetchAuthorsWithoutArticles = async () => {
