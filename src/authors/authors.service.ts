@@ -11,7 +11,7 @@ export class AuthorsService {
     return this.prisma.author.findMany({
       select: {
         id: true,
-        username: true,
+        authorName: true,
         email: true,
         profilePicture: true,
         bio: true,

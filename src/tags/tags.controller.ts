@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/CreateTagDto';
 import { UpdateTagDto } from './dto/UpdateTagDto';
@@ -13,6 +13,14 @@ export class TagsController {
   }
   @Put(':id')
   updateTag(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
+    return this.tagsService.UpdateTags(id, updateTagDto);
+  }
+  @Get()
+  findAllTags() {
+    return this.tagsService.FindAllTags();
+  }
+  @Put(':id')
+  updateTags(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
     return this.tagsService.UpdateTags(id, updateTagDto);
   }
 }

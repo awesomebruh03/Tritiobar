@@ -14,6 +14,10 @@ export class TagsService {
     });
   };
 
+  FindAllTags = async () => {
+    return this.prisma.tag.findMany();
+  };
+
   UpdateTags = async (id: string, updateTagDto: UpdateTagDto) => {
     return this.prisma.tag.update({
       where: { id },
