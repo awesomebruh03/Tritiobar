@@ -25,7 +25,6 @@ export class ArticlesService {
     const { tags, ...articleData } = createArticleDto;
 
     // Ensure all tags exist or create them if they don't
-        // Ensure all tags exist or create them if they don't
     const tagRecords = await Promise.all(
       tags.map(async (tagName) => {
         let tag = await this.prisma.tag.findUnique({
@@ -39,7 +38,7 @@ export class ArticlesService {
         return tag;
       })
     );
-    
+
     // Create the article with the associated tags
     return this.prisma.article.create({
       data: {
@@ -49,10 +48,11 @@ export class ArticlesService {
         },
       },
     });
+  }
 
   async update(id: string, updateArticleDto: UpdateArticleDto) {
     const { tags, ...updateData } = updateArticleDto;
-  
+
     // Ensure all tags exist or create them if they don't
     const tagRecords = tags
       ? await Promise.all(
@@ -69,7 +69,7 @@ export class ArticlesService {
           })
         )
       : [];
-  
+
     // Update the article with the associated tags
     return this.prisma.article.update({
       where: { id },

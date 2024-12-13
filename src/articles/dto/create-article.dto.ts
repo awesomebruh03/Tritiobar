@@ -13,7 +13,7 @@ export class CreateArticleDto {
   authorId: string;
 
   @IsDateString()
-  publishedDate: string;
+  publishedDate: Date;
 
   @IsString()
   content: string;
