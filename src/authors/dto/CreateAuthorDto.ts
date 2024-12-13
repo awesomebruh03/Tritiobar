@@ -1,5 +1,5 @@
 export class CreateAuthorDto {
-  username: string;
+  authorName: string;
   email?: string;
   profilePicture?: string;
   bio?: string;

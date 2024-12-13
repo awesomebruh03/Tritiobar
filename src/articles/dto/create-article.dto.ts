@@ -11,6 +11,9 @@ export class CreateArticleDto {
 
   @IsString()
   authorId: string;
+  
+  @IsString()
+  authorName: string;
 
   @IsDateString()
   publishedDate: Date;

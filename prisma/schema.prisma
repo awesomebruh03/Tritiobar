@@ -33,7 +33,7 @@ model Article {
 
 model Author {
   id             String   @id @default(cuid())
-  username       String   @unique
+  authorName     String   
   email          String?   @unique
   profilePicture String?
   bio            String?  // Optional biography field
@@ -41,7 +41,7 @@ model Author {
   createdAt      DateTime @default(now()) // Timestamp for when the author was created
   updatedAt      DateTime @updatedAt // Timestamp for when the author was last updated
 
-  @@index([username]) // Index for faster queries
+  @@index([authorName]) // Index for faster queries
 }
 
 model Tag {

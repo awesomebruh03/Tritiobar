@@ -4,7 +4,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
-export class ArticlesService {
+export class ArticlesController {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
@@ -36,8 +36,20 @@ export class ArticlesService {
           });
         }
         return tag;
-      })
+      }),
     );
+    // Ensure the author exists or create them if they don't
+    let author = await this.prisma.author.findUnique({
+      where: { id: createArticleDto.authorId },
+    });
+    if (!author) {
+      throw new NotFoundException(
+        `Author with ID ${createArticleDto.authorId} not found`,
+      );
+      author = await this.prisma.author.create({
+        data: { authorName: createArticleDto.authorName },
+      });
+    }
 
     // Create the article with the associated tags
     return this.prisma.article.create({
@@ -66,7 +78,7 @@ export class ArticlesService {
               });
             }
             return tag;
-          })
+          }),
         )
       : [];
 

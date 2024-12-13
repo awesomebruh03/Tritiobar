@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client';
 import { CreateAuthorDto } from './dto/CreateAuthorDto';
 import { UpdateAuthorDto } from './dto/UpdateAuthorDto';
 
-
 @Injectable()
 export class AuthorsService {
   private prisma = new PrismaClient();

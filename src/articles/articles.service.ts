@@ -36,7 +36,7 @@ export class ArticlesService {
           });
         }
         return tag;
-      })
+      }),
     );
 
     // Create the article with the associated tags
@@ -66,7 +66,7 @@ export class ArticlesService {
               });
             }
             return tag;
-          })
+          }),
         )
       : [];
 
