@@ -7,13 +7,13 @@ import {
   Body,
   Param,
 } from '@nestjs/common';
-import { ArticleService } from './articles.service';
+import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Controller('articles')
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(private readonly articleService: ArticlesService) {}
 
   @Get()
   findAll() {
@@ -22,7 +22,7 @@ export class ArticleController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.articleService.findOne(Number(id));
+    return this.articleService.findOne(String(id));
   }
 
   @Post()
@@ -32,11 +32,11 @@ export class ArticleController {
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
-    return this.articleService.update(Number(id), updateArticleDto);
+    return this.articleService.update(String(id), updateArticleDto);
   }
 
   @Delete(':id')
   delete(@Param('id') id: string) {
-    return this.articleService.delete(Number(id));
+    return this.articleService.delete(String(id));
   }
 }
