@@ -4,7 +4,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
-export class ArticlesService {
+export class ArticleController {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
@@ -36,7 +36,7 @@ export class ArticlesService {
           });
         }
         return tag;
-      })
+      }),
     );
 
     // Create the article with the associated tags
@@ -66,7 +66,7 @@ export class ArticlesService {
               });
             }
             return tag;
-          })
+          }),
         )
       : [];
 
