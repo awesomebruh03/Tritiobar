@@ -53,4 +53,11 @@ export class AuthorsService {
       where: { id },
     });
   };
+  findAllArticlesByAuthor = async (id: string) => {
+    return this.prisma.author
+      .findUnique({
+        where: { id },
+      })
+      .articles();
+  };
 }

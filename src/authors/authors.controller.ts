@@ -39,4 +39,8 @@ export class AuthorsController {
   delete(@Param('id') id: string) {
     return this.authorsService.delete(String(id));
   }
+  @Get(':id/articles')
+  findAllArticlesByAuthor(@Param('id') id: string) {
+    return this.authorsService.findAllArticlesByAuthor(id);
+  }
 }
