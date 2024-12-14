@@ -51,7 +51,7 @@ export class ArticlesService {
   }
 
   async update(id: string, updateArticleDto: UpdateArticleDto) {
-    const { tags, ...updateData } = updateArticleDto;
+    const { tags, authorId, ...updateData } = updateArticleDto;
 
     // Ensure all tags exist or create them if they don't
     const tagRecords = tags
@@ -75,6 +75,7 @@ export class ArticlesService {
       where: { id },
       data: {
         ...updateData,
+        authorId: authorId || undefined,
         tags: tags
           ? {
               set: tagRecords.map((tag) => ({ id: tag.id })),
@@ -89,5 +90,14 @@ export class ArticlesService {
       where: { id },
     });
     return article;
+  }
+  async getTopFiveArticles() {
+    return this.prisma.article.findMany({
+      where: {
+        articleType: 'topfive',
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
   }
 }

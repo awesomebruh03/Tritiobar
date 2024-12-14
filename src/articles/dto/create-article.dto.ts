@@ -4,19 +4,22 @@ import {
   IsArray,
   IsDateString,
   IsUrl,
+  IsIn,
 } from 'class-validator';
+
 export class CreateArticleDto {
   @IsString()
   title: string;
 
+  @IsOptional() // Mark as optional if not always required
   @IsString()
-  authorId: string;
+  authorId?: string;
 
   @IsString()
   authorName: string;
 
   @IsDateString()
-  publishedDate: Date;
+  publishedDate: string; // Ensure consistency with Prisma schema (use string if dates are stored as ISO strings)
 
   @IsString()
   content: string;
@@ -37,6 +40,6 @@ export class CreateArticleDto {
   videoUrl?: string;
 
   @IsOptional()
-  @IsString()
-  articleType?: string;
+  @IsIn(['banner', 'topfive', 'regular']) // Enforce valid values
+  articleType?: 'banner' | 'topfive' | 'regular';
 }

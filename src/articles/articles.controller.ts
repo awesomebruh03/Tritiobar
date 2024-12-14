@@ -42,4 +42,9 @@ export class ArticlesController {
   async delete(@Param('id') id: string) {
     return this.articlesService.delete(id);
   }
+
+  @Get('top-five-articles')
+  getTopFiveArticles() {
+    return this.articlesService.getTopFiveArticles();
+  }
 }
