@@ -1,33 +1,31 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Put,
-  Delete,
-  Param,
-  Body,
 } from '@nestjs/common';
-import { ArticlesService } from './articles.service';
+import { ArticleService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Controller('articles')
 export class ArticlesController {
-  constructor(private readonly articlesService: ArticlesService) {}
+  constructor(private readonly articlesService: ArticleService) {}
 
   @Get()
   async findAll() {
     return this.articlesService.findAll();
   }
-
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.articlesService.findOne(id);
   }
-
   @Post()
   async create(@Body() createArticleDto: CreateArticleDto) {
-    return this.articlesService.create(createArticleDto);
+    return this.articlesService.createArticle(createArticleDto);
   }
 
   @Put(':id')
@@ -45,6 +43,10 @@ export class ArticlesController {
 
   @Get('top-five-articles')
   getTopFiveArticles() {
+    return this.articlesService.getTopFiveArticles();
+  }
+  @Get('banner-articles')
+  getBaner() {
     return this.articlesService.getTopFiveArticles();
   }
 }

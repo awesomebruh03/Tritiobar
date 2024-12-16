@@ -17,6 +17,9 @@ export class CreateArticleDto {
 
   @IsString()
   authorName: string;
+  @IsString()
+  @IsOptional()
+  authorEmail: string;
 
   @IsDateString()
   publishedDate: string; // Ensure consistency with Prisma schema (use string if dates are stored as ISO strings)

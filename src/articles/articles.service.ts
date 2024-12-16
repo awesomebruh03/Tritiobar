@@ -1,17 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { Article, PrismaClient } from '@prisma/client';
 import { CreateArticleDto } from './dto/create-article.dto';
+import { CreateOrFindAuthor } from '../utils/createOrFindAuthor.utils';
+import { CreateOrFindTags } from '../utils/createOrFindTags.utils';
 import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
-export class ArticlesService {
-  constructor(private prisma: PrismaService) {}
+export class ArticleService {
+  private prisma = new PrismaClient();
 
-  async findAll() {
-    return this.prisma.article.findMany();
-  }
+  findAll = async () => {
+    try {
+      return await this.prisma.article.findMany();
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      throw new InternalServerErrorException('Failed to fetch articles');
+    }
+  };
 
-  async findOne(id: string) {
+  findOne = async (id: string) => {
     const article = await this.prisma.article.findUnique({
       where: { id },
     });
@@ -19,36 +30,60 @@ export class ArticlesService {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
     return article;
-  }
+  };
 
-  async create(createArticleDto: CreateArticleDto) {
-    const { tags, ...articleData } = createArticleDto;
+  createArticle = async (
+    createArticleDto: CreateArticleDto,
+  ): Promise<Article> => {
+    const createOrFindAuthor = new CreateOrFindAuthor();
+    const createOrFindTags = new CreateOrFindTags();
 
-    // Ensure all tags exist or create them if they don't
-    const tagRecords = await Promise.all(
-      tags.map(async (tagName) => {
-        let tag = await this.prisma.tag.findUnique({
-          where: { name: tagName },
-        });
-        if (!tag) {
-          tag = await this.prisma.tag.create({
-            data: { name: tagName },
-          });
-        }
-        return tag;
-      }),
-    );
+    // Destructure properties from the DTO
+    const {
+      title,
+      content,
+      authorName,
+      authorEmail,
+      publishedDate,
+      tags: tagNames,
+      category,
+      images,
+      videoUrl,
+      articleType,
+    } = createArticleDto;
 
-    // Create the article with the associated tags
+    // Step 1: Use createOrFindAuthor to get the author
+    const author = await createOrFindAuthor.createOrFindAuthor({
+      authorName,
+      email: authorEmail || '', // Pass an empty string if email is undefined
+    });
+
+    // Step 2: Use createOrFindTag to get the tags
+    const tags = [];
+    for (const tagName of tagNames) {
+      const tag = await createOrFindTags.createOrFindTag(tagName);
+      tags.push({ id: tag.id });
+    }
+
+    // Step 3: Create the article
     return this.prisma.article.create({
       data: {
-        ...articleData,
+        title,
+        content,
+        publishedDate: new Date(publishedDate), // Convert ISO string to Date
+        category,
+        images,
+        videoUrl: videoUrl || null, // Set to null if undefined
+        articleType: articleType || 'regular', // Default to 'regular' if not provided
+        author: {
+          connect: { id: author.id }, // Connect the article to the author
+        },
         tags: {
-          connect: tagRecords.map((tag) => ({ id: tag.id })),
+          connect: tags, // Connect the article to the tags
         },
       },
     });
-  }
+  };
 
   async update(id: string, updateArticleDto: UpdateArticleDto) {
     const { tags, authorId, ...updateData } = updateArticleDto;
@@ -86,15 +121,25 @@ export class ArticlesService {
   }
 
   async delete(id: string) {
-    const article = await this.prisma.article.delete({
+    return this.prisma.article.delete({
       where: { id },
     });
-    return article;
   }
+
   async getTopFiveArticles() {
     return this.prisma.article.findMany({
       where: {
         articleType: 'topfive',
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
+  }
+
+  async getBaner() {
+    return this.prisma.article.findMany({
+      where: {
+        articleType: 'banner',
       },
       orderBy: { createdAt: 'desc' },
       take: 5,
