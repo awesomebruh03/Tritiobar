@@ -60,4 +60,28 @@ export class AuthorsService {
       })
       .articles();
   };
+  async findAuthorByEmail(email: string, authorName: string) {
+    return this.prisma.author.findFirst({
+      where: {
+        email,
+        authorName,
+      },
+      select: {
+        id: true,
+        authorName: true,
+      },
+    });
+  }
+
+  async createOrFindAuthor(param: { authorName: string; email: string }) {
+    let author = await this.findAuthorByEmail(param.email, param.authorName);
+
+    if (author) {
+      return { id: author.id, authorName: author.authorName }; // Corrected to return the actual authorName
+    }
+
+    author = await this.create(param);
+
+    return author; // This will return the full author object created
+  }
 }

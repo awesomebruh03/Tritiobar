@@ -1,17 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { Article, PrismaClient } from '@prisma/client';
 import { CreateArticleDto } from './dto/create-article.dto';
+import { CreateOrFindAuthor } from '../utils/createOrFindAuthor.utils';
+import { CreateOrFindTags } from '../utils/createOrFindTags.utils';
 import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
-export class ArticlesService {
-  constructor(private prisma: PrismaService) {}
+export class ArticleService {
+  private prisma = new PrismaClient();
 
-  async findAll() {
-    return this.prisma.article.findMany();
-  }
+  findAll = async () => {
+    try {
+      return await this.prisma.article.findMany();
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      throw new InternalServerErrorException('Failed to fetch articles');
+    }
+  };
 
-  async findOne(id: string) {
+  findOne = async (id: string) => {
     const article = await this.prisma.article.findUnique({
       where: { id },
     });
@@ -19,7 +30,7 @@ export class ArticlesService {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
     return article;
-  }
+  };
 
   async create(createArticleDto: CreateArticleDto) {
     try {
@@ -94,15 +105,25 @@ export class ArticlesService {
   }
 
   async delete(id: string) {
-    const article = await this.prisma.article.delete({
+    return this.prisma.article.delete({
       where: { id },
     });
-    return article;
   }
+
   async getTopFiveArticles() {
     return this.prisma.article.findMany({
       where: {
         articleType: 'topfive',
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
+  }
+
+  async getBaner() {
+    return this.prisma.article.findMany({
+      where: {
+        articleType: 'banner',
       },
       orderBy: { createdAt: 'desc' },
       take: 5,

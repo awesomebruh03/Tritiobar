@@ -26,4 +26,20 @@ export class TagsService {
       },
     });
   };
+  findTagsByName = async (tagName: string) => {
+    return this.prisma.tag.findUnique({
+      where: { name: tagName },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  };
+  createOrFindTag = async (tagName: string) => {
+    let tag = await this.findTagsByName(tagName);
+    if (!tag) {
+      tag = await this.CreateTag({ name: tagName });
+    }
+    return tag;
+  };
 }

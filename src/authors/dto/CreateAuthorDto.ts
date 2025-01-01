@@ -10,7 +10,6 @@ export class CreateAuthorDto {
   @IsUrl()
   profilePicture?: string;
 
-  @IsUrl()
   @IsString()
   bio?: string;
 }
