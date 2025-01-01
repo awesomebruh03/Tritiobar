@@ -22,32 +22,40 @@ export class ArticlesService {
   }
 
   async create(createArticleDto: CreateArticleDto) {
-    const { tags, ...articleData } = createArticleDto;
-
-    // Ensure all tags exist or create them if they don't
-    const tagRecords = await Promise.all(
-      tags.map(async (tagName) => {
-        let tag = await this.prisma.tag.findUnique({
-          where: { name: tagName },
-        });
-        if (!tag) {
-          tag = await this.prisma.tag.create({
-            data: { name: tagName },
-          });
-        }
-        return tag;
-      }),
-    );
-
-    // Create the article with the associated tags
-    return this.prisma.article.create({
-      data: {
-        ...articleData,
-        tags: {
-          connect: tagRecords.map((tag) => ({ id: tag.id })),
+    try {
+      const { tags, ...articleData } = createArticleDto;
+  
+      // Ensure tags is defined and is an array
+      const tagRecords = tags
+        ? await Promise.all(
+            tags.map(async (tagName) => {
+              let tag = await this.prisma.tag.findUnique({
+                where: { name: tagName },
+              });
+              if (!tag) {
+                tag = await this.prisma.tag.create({
+                  data: { name: tagName },
+                });
+              }
+              return tag;
+            }),
+          )
+        : [];
+  
+      // Create the article with the associated tags
+      return this.prisma.article.create({
+        data: {
+          ...articleData,
+          tags: {
+            connect: tagRecords.map((tag) => ({ id: tag.id })),
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      console.error('Error creating article:', error.message);
+      console.error(error.stack);
+      throw new Error('Internal server error');
+    }
   }
 
   async update(id: string, updateArticleDto: UpdateArticleDto) {
