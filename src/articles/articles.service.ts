@@ -3,15 +3,53 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { Article, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { CreateArticleDto } from './dto/create-article.dto';
-import { CreateOrFindAuthor } from '../utils/createOrFindAuthor.utils';
-import { CreateOrFindTags } from '../utils/createOrFindTags.utils';
+import createOrFindAuthor from '../utils/createOrFindAuthor.utils';
+import createOrFindTag from '../utils/createOrFindTags.utils';
 import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
 export class ArticleService {
   private prisma = new PrismaClient();
+
+  create = async (createArticleDto: CreateArticleDto) => {
+    try {
+      const { tags, authorName, authorEmail, ...articleData } =
+        createArticleDto;
+
+      // Find or create the author
+      const author = await createOrFindAuthor({
+        authorName,
+        email: authorEmail,
+      });
+
+      // Ensure tags is defined and is an array
+      const tagRecords = tags
+        ? await Promise.all(
+            tags.map(async (tagName) => {
+              const tag = await createOrFindTag(tagName);
+              return tag;
+            }),
+          )
+        : [];
+
+      // Create the article with the associated tags and author
+      return this.prisma.article.create({
+        data: {
+          ...articleData,
+          authorId: author.id,
+          tags: {
+            connect: tagRecords.map((tag) => ({ id: tag.id })),
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Error creating article:', error.message);
+      console.error(error.stack);
+      throw new Error('Internal server error');
+    }
+  };
 
   findAll = async () => {
     try {
@@ -31,43 +69,6 @@ export class ArticleService {
     }
     return article;
   };
-
-  async create(createArticleDto: CreateArticleDto) {
-    try {
-      const { tags, ...articleData } = createArticleDto;
-  
-      // Ensure tags is defined and is an array
-      const tagRecords = tags
-        ? await Promise.all(
-            tags.map(async (tagName) => {
-              let tag = await this.prisma.tag.findUnique({
-                where: { name: tagName },
-              });
-              if (!tag) {
-                tag = await this.prisma.tag.create({
-                  data: { name: tagName },
-                });
-              }
-              return tag;
-            }),
-          )
-        : [];
-  
-      // Create the article with the associated tags
-      return this.prisma.article.create({
-        data: {
-          ...articleData,
-          tags: {
-            connect: tagRecords.map((tag) => ({ id: tag.id })),
-          },
-        },
-      });
-    } catch (error) {
-      console.error('Error creating article:', error.message);
-      console.error(error.stack);
-      throw new Error('Internal server error');
-    }
-  }
 
   async update(id: string, updateArticleDto: UpdateArticleDto) {
     const { tags, authorId, ...updateData } = updateArticleDto;

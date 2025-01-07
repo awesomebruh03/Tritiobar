@@ -25,7 +25,7 @@ export class ArticlesController {
   }
   @Post()
   async create(@Body() createArticleDto: CreateArticleDto) {
-    return this.articlesService.createArticle(createArticleDto);
+    return this.articlesService.create(createArticleDto);
   }
 
   @Put(':id')

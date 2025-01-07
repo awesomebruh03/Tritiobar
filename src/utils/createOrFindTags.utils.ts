@@ -1,12 +1,13 @@
 import { TagsService } from '../tags/tags.service';
 
-export class CreateOrFindTags {
-  private tagsService = new TagsService();
-  createOrFindTag = async (tagName: string) => {
-    let tag = await this.tagsService.findTagsByName(tagName);
-    if (!tag) {
-      tag = await this.tagsService.CreateTag({ name: tagName });
-    }
-    return tag;
-  };
-}
+const tagsService = new TagsService();
+
+const createOrFindTag = async (tagName: string) => {
+  let tag = await tagsService.findTagsByName(tagName);
+  if (!tag) {
+    tag = await tagsService.CreateTag({ name: tagName });
+  }
+  return { id: tag.id };
+};
+
+export default createOrFindTag;
